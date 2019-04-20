@@ -1,8 +1,7 @@
 const csvSplitStream = require('csv-split-stream')
 const fs = require('fs')
 const path = './split'
-const csv = '../StockEtablissement_utf8.csv'
-// const pm2 = require('pm2')
+const csv = 'StockEtablissement_utf8.csv'
 
 // tcheck if task folder exist
 const createTask = () => {
@@ -23,16 +22,14 @@ const splitSVG = (csv) => {
       {
         'lineLimit': 250000
       },
-      (index) => fs.createWriteStream(`./task/output-${index}.csv`)
+      (index) => fs.createWriteStream(`./split/output-${index}.csv`)
     ).then((response) => {
       console.log(response)
     })
   })
 }
 
-// EXECUTION
 createTask().then((response) => {
-  //SVG SPLIT
   splitSVG(csv).then(() => {
     console.log(response)
   })
