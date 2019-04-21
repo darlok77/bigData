@@ -1,5 +1,5 @@
 const fs = require('fs')
-const path = './mock'
+const path = './split'
 const pm2 = require('pm2')
 // ICI trow err
 
@@ -99,11 +99,14 @@ const getNameSplitFile = () => {
 }
 
 const startProcess = (fileTab) => {
+  console.log('ABBBA')
   pm2.connect(err => {
     if (err) {
+      console.log('CCCCC')
       console.error(err)
       process.exit(2)
     }
+    console.log('DDDDD')
     pm2.start({
       'script': 'public/save.js' // Script to be run
       // 'exec_mode': 'cluster'
@@ -120,7 +123,8 @@ const startProcess = (fileTab) => {
           'id': 1,
           'type': 'process:msg',
           'data': {
-            'file': fileTab[0]
+            'file': fileTab[0],
+            'totalFile' :fileTab
           },
           'topic': 'my topic'
         },
@@ -139,10 +143,13 @@ getNameSplitFile().then((res) => {
   startProcess(res)
 })
 
-/*pm2.launchBus((err, bus) => {
-  bus.on('process:msg', packet => {
-    console.log('test')
-    console.log(packet)
+pm2.launchBus((err, bus) => {
+  bus.on('messageToParent', packet => {
     pm2.delete(packet.process.pm_id)
+    console.log(packet.data.totalFile.length)
+    if (packet.data.totalFile.length !== 0) {
+      console.log('---------')
+      startProcess(packet.data.totalFile)
+    }
   })
-})*/
+})
