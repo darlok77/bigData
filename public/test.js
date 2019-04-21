@@ -29,6 +29,7 @@ class Test {
       }
       pm2.start({
         'script': 'public/save.js' // Script to be run
+        // 'exec_mode': 'cluster'
       }, (err, apps) => {
         if (err) {
           console.log(err)
@@ -42,7 +43,7 @@ class Test {
             'id': 0,
             'type': 'process:msg',
             'data': {
-              'file': fileTab[0],
+              'file': 'mock.js',
             },
             'topic': 'my topic'
           },
