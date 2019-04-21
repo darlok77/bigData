@@ -1,11 +1,12 @@
 const csvSplitStream = require('csv-split-stream')
 const fs = require('fs')
+
 const path = './split'
 const csv = 'StockEtablissement_utf8.csv'
 
 // tcheck if task folder exist
-const createTask = () => {
-  return new Promise((resolve) => {
+const createTask = () => (
+  new Promise((resolve) => {
     if (! fs.existsSync(path)) {
       fs.mkdirSync(path)
       resolve('NOT EXIST')
@@ -13,10 +14,10 @@ const createTask = () => {
       resolve('EXIST')
     }
   })
-}
+)
 
-const splitSVG = (csv) => {
-  return new Promise(()=> {
+const splitSVG = (csv) => (
+  new Promise(()=> {
     csvSplitStream.split(
       fs.createReadStream(csv),
       {
@@ -27,7 +28,7 @@ const splitSVG = (csv) => {
       console.log(response)
     })
   })
-}
+)
 
 createTask().then((response) => {
   splitSVG(csv).then(() => {
