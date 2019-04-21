@@ -3,7 +3,7 @@ const path = './split'
 const pm2 = require('pm2')
 
 class Test {
-  getNameSplitFile () {
+  getNameSplitFile() {
     return new Promise((resolve) => {
       fs.readdir(path, (err, items) => {
         if (err) {
@@ -21,36 +21,49 @@ class Test {
     })
   }
 
-  startProcess (fileTab) {
-    pm2.connect((err) => {
+  startProcess(fileTab) {
+    pm2.connect(err => {
       if (err) {
         console.error(err)
-        process.exit(2) //sigint
+        process.exit(2)
       }
-
       pm2.start({
-        'name': fileTab[0],
-        'script': './task/' + fileTab[0], // Script to be run
-        'exec_mode': 'cluster', // Allows your app to be clustered
-        'instances': 1, // Optional: Scales your app by 4
-        'max_memory_restart': '100M', // Optional: Restarts your app if it reaches 100Mo
-        'interpreter': 'none'
+        'script': 'public/save.js' // Script to be run
       }, (err, apps) => {
         if (err) {
-          throw err
+          console.log(err)
         }
-        // Ici envoie d'un message pour démarer un autre process
-        pm2.delete(fileTab[0])
+        console.log('app started!')
+        pm2.list((err, list) => {
+          if (err) {
+            console.log(err)
+          }
+          pm2.sendDataToProcessId(list[0].pm2_env.pm_id, {
+            'id': 0,
+            'type': 'process:msg',
+            'data': {
+              'file': fileTab[0],
+            },
+            'topic': 'my topic'
+          },
+          (err, res) => {
+            if (err) {
+              console.log(err)
+            }
+          })
+          pm2.disconnect()
+        })
       })
     })
   }
-
-  run () {
-    this.getNameSplitFile ()
-    /* getNameSplitFile().then((res) => {
-      startProcess(res)
-    }) */
+  run() {
+    // this.getNameSplitFile ()
+    this.getNameSplitFile().then((res) => {
+      this.startProcess(res)
+    })
   }
 }
 
-Test.run()
+const test = new Test()
+
+test.run()

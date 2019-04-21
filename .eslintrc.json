@@ -412,7 +412,7 @@
     "space-before-blocks": [2, "always"],
 
     // require or disallow space before function opening parenthesis (off by default)
-    "space-before-function-paren": [2, "always"],
+    "space-before-function-paren": [2, "never"],
 
     // require or disallow spaces inside parentheses (off by default)
     "space-in-parens": [2, "never"],
