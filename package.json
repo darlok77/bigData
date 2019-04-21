@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "lint": "eslint ./public/test.js"
+    "start": "pm2 start ./ecosystem.config.js",
+    "lint": "eslint ./public/*"
   },
   "author": "",
   "license": "ISC",
