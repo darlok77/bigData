@@ -4,6 +4,12 @@ const MongoClient = require('mongodb').MongoClient
 const url = 'mongodb://localhost:27017/bigDataGD'
 const filename = 'mock.csv'
 
+/*
+* createNewEntries
+* @param {Object} client 
+* @param {array} entries 
+* @return {object} client
+*/
 const createNewEntries = (client, entries) => (
   new Promise(resolve => {
     // Get the collection and bulk api artefacts
@@ -29,8 +35,7 @@ const createNewEntries = (client, entries) => (
 )
 
 process.on('message', data => {
-  console.log('truc machin ')
-  console.log(data)
+  console.log(data.data.file)
   csv()
   .fromFile(`mock/${data.data.file}`)
   .then(jsonObj => {

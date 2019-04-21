@@ -1,5 +1,5 @@
 const fs = require('fs')
-const path = './split'
+const path = './mock'
 const pm2 = require('pm2')
 // ICI trow err
 
@@ -80,6 +80,10 @@ const pm2 = require('pm2')
   })
 }) */
 
+/*
+* getNameSplitFile
+* @return {array} fileTab
+*/
 const getNameSplitFile = () => {
   return new Promise((resolve) => {
     fs.readdir(path, (err, items) => {
@@ -98,29 +102,38 @@ const getNameSplitFile = () => {
   })
 }
 
-const startProcess = (fileTab) => {
+/*
+* startProcess
+* @param {array} fileTab 
+* @param {int} processId 
+*/
+const startProcess = (fileTab, processId) => {
   console.log('ABBBA')
+  console.log(processId)
+  const id = processId + 1
   pm2.connect(err => {
     if (err) {
-      console.log('CCCCC')
       console.error(err)
       process.exit(2)
     }
-    console.log('DDDDD')
     pm2.start({
       'script': 'public/save.js' // Script to be run
       // 'exec_mode': 'cluster'
-    }, (err) => {
+    }, (err, apps) => {
       if (err) {
         console.log(err)
       }
+      //console.log(apps)
       console.log('app started!')
       pm2.list((err, list) => {
         if (err) {
           console.log(err)
         }
+        console.log('----------------------')
+        console.log(list.length)
+        console.log(list[list.length-1].pm2_env.pm_id)
         pm2.sendDataToProcessId({
-          'id': 1,
+          'id': id,
           'type': 'process:msg',
           'data': {
             'file': fileTab[0],
@@ -140,7 +153,7 @@ const startProcess = (fileTab) => {
   })
 }
 getNameSplitFile().then((res) => {
-  startProcess(res)
+  startProcess(res, 0)
 })
 
 pm2.launchBus((err, bus) => {
@@ -148,8 +161,7 @@ pm2.launchBus((err, bus) => {
     pm2.delete(packet.process.pm_id)
     console.log(packet.data.totalFile.length)
     if (packet.data.totalFile.length !== 0) {
-      console.log('---------')
-      startProcess(packet.data.totalFile)
+      startProcess(packet.data.totalFile, packet.process.pm_id)
     }
   })
 })
